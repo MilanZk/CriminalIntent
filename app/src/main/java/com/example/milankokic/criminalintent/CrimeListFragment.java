@@ -43,14 +43,14 @@ public class CrimeListFragment extends Fragment {
         private TextView mDateTextView;
         private Crime mCrime;
 
-        public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.list_item_crime, parent, false));
+        public CrimeHolder(LayoutInflater inflater, ViewGroup parent, int layoutId) {
+            super(inflater.inflate(layoutId, parent, false));
 
             mTitleTextView = itemView.findViewById(R.id.crime_title);
             mDateTextView = itemView.findViewById(R.id.crime_date);
         }
 
-        public void bind (Crime crime){
+        public void bind(Crime crime) {
             mCrime = crime;
             mTitleTextView.setText(mCrime.getTitle());
             mDateTextView.setText(mCrime.getDate().toString());
@@ -58,9 +58,11 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(getActivity(), mCrime.getTitle() + "clicked!", Toast.LENGTH_SHORT).show();;
+            Toast.makeText(getActivity(), mCrime.getTitle() + "clicked!", Toast.LENGTH_SHORT).show();
+            ;
         }
     }
+
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
         private List<Crime> mCrimes;
@@ -70,9 +72,23 @@ public class CrimeListFragment extends Fragment {
         }
 
         @Override
+        public int getItemViewType(int position) {
+            return mCrimes.get(position).ismRequiresPolice() ? 1 : 0;
+        }
+
+        @Override
         public CrimeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
-            return new CrimeHolder(inflater, parent);
+            CrimeHolder crimeHolder = null;
+            switch (viewType){
+                case 0:
+                    crimeHolder =  new CrimeHolder(inflater, parent, R.layout.list_item_crime);
+                    break;
+                case 1:
+                    crimeHolder = new CrimeHolder(inflater, parent, R.layout.contact_police);
+                    break;
+            }
+            return crimeHolder;
         }
 
         @Override
