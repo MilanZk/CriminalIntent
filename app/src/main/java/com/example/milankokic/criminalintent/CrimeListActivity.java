@@ -1,6 +1,10 @@
 package com.example.milankokic.criminalintent;
 
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 
-public class CrimeListActivity  extends AppCompatActivity{
+public class CrimeListActivity extends SingleFragmentActivity {
+    @Override
+    protected Fragment createFragment() {
+        return new CrimeListFragment();
+    }
 }

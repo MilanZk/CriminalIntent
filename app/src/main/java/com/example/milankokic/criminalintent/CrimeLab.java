@@ -1,16 +1,16 @@
 package com.example.milankokic.criminalintent;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import javax.naming.Context;
 
 public class CrimeLab {
     private static CrimeLab sCrimeLab;
     public List<Crime> mCrimes;
 
-    public CrimeLab get(Context context) {
+    public static CrimeLab get(Context context) {
         if (sCrimeLab == null) {
             sCrimeLab = new CrimeLab(context);
         }

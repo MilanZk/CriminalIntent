@@ -33,7 +33,7 @@ public class CrimeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_crime, container, false);
 
         mBDateButton = view.findViewById(R.id.crime_date);
-        mBDateButton.setText(mCrime.getmDate().toString());
+        mBDateButton.setText(mCrime.getDate().toString());
         mBDateButton.setEnabled(false);
 
         mTitleField = view.findViewById(R.id.crime_title);
@@ -45,7 +45,7 @@ public class CrimeFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mCrime.setmTitle(charSequence.toString());
+                mCrime.setTitle(charSequence.toString());
             }
 
             @Override
