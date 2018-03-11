@@ -4,7 +4,6 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class CrimeLab {
     private static CrimeLab sCrimeLab;
@@ -31,13 +30,8 @@ public class CrimeLab {
         return mCrimes;
     }
 
-    public Crime getCrime(UUID id) {
-        for (Crime crime : mCrimes) {
-            if (crime.getId().equals(id)) {
-                return crime;
-            }
-        }
-        return null;
+    public Crime getCrime(int position) {
+        return mCrimes.get(position);
     }
 
 }

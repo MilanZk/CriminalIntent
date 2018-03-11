@@ -17,16 +17,16 @@ import java.util.UUID;
 
 
 public class CrimeFragment extends Fragment {
-    private static final String ARG_CRIME_ID = "crime_id";
+    private static final String POSITION = "position";
     private Crime mCrime;
     private EditText mTitleField;
     private Button mBDateButton;
     private CheckBox mSolvedCheckBox;
 
 
-    public static CrimeFragment newInstance(UUID crimeId) {
+    public static CrimeFragment newInstance(int position) {
         Bundle args = new Bundle();
-        args.putSerializable(ARG_CRIME_ID, crimeId);
+        args.putSerializable(POSITION, position);
 
         CrimeFragment fragment = new CrimeFragment();
         fragment.setArguments(args);
@@ -36,8 +36,8 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
-        mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+        int position = (int) getArguments().getSerializable(POSITION);
+        mCrime = CrimeLab.get(getActivity()).getCrime(position);
     }
 
     @Nullable

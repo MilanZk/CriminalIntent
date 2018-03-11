@@ -17,6 +17,7 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
+    private int mLastPosition = -1;
 
     @Nullable
     @Override
@@ -38,7 +39,12 @@ public class CrimeListFragment extends Fragment {
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
-            mAdapter.notifyDataSetChanged();
+            if (mLastPosition > -1) {
+                mAdapter.notifyItemChanged(mLastPosition);
+                mLastPosition = -1;
+            } else {
+                mAdapter.notifyDataSetChanged();
+            }
         }
     }
 
@@ -66,7 +72,8 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
+            mLastPosition = this.getAdapterPosition();
+            Intent intent = CrimeActivity.newIntent(getActivity(), this.getAdapterPosition());
             startActivity(intent);
         }
     }

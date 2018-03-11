@@ -8,17 +8,17 @@ import java.util.UUID;
 
 public class CrimeActivity extends SingleFragmentActivity {
 
-    private static final String EXTRA_CRIME_ID = ".crime_id";
+    private static final String EXTRA_CRIME_POSITION = ".crime_id";
 
     @Override
     protected Fragment createFragment() {
-        UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
-        return CrimeFragment.newInstance(crimeId);
+        int position = (int) getIntent().getSerializableExtra(EXTRA_CRIME_POSITION);
+        return CrimeFragment.newInstance(position);
     }
 
-    public static Intent newIntent (Context context, UUID crimeId){
+    public static Intent newIntent(Context context, int position) {
         Intent intent = new Intent(context, CrimeActivity.class);
-        intent.putExtra(EXTRA_CRIME_ID, crimeId);
+        intent.putExtra(EXTRA_CRIME_POSITION, position);
         return intent;
     }
 }
