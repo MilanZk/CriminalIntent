@@ -1,4 +1,4 @@
-package com.example.milankokic.criminalintent;
+package com.example.milankokic.criminalintent.model;
 
 import java.util.Date;
 import java.util.UUID;

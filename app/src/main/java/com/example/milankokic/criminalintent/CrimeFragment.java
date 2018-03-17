@@ -13,6 +13,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import com.example.milankokic.criminalintent.database.CrimeLab;
+import com.example.milankokic.criminalintent.model.Crime;
+
 import java.util.UUID;
 
 

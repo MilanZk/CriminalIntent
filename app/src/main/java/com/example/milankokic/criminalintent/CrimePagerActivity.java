@@ -9,6 +9,9 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import com.example.milankokic.criminalintent.database.CrimeLab;
+import com.example.milankokic.criminalintent.model.Crime;
+
 import java.util.List;
 import java.util.UUID;
 

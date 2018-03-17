@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.milankokic.criminalintent.database.CrimeLab;
+import com.example.milankokic.criminalintent.model.Crime;
+
 import java.util.List;
 
 public class CrimeListFragment extends Fragment {
