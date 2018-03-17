@@ -1,4 +1,4 @@
-package com.example.milankokic.criminalintent;
+package com.example.milankokic.criminalintent.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,10 +16,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.milankokic.criminalintent.R;
+import com.example.milankokic.criminalintent.activities.CrimePagerActivity;
 import com.example.milankokic.criminalintent.database.CrimeLab;
 import com.example.milankokic.criminalintent.model.Crime;
 
 import java.util.List;
+import java.util.UUID;
 
 public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
@@ -53,7 +56,7 @@ public class CrimeListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.new_crime:
-                Crime crime = new Crime();
+                Crime crime = new Crime(UUID.randomUUID());
                 CrimeLab.get(getActivity()).addCrime(crime);
                 Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
                 startActivity(intent);
@@ -105,6 +108,7 @@ public class CrimeListFragment extends Fragment {
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
+            mAdapter.setCrimes(crimes);
             mAdapter.notifyDataSetChanged();
         }
         updateSubtitle();
@@ -167,6 +171,10 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemCount() {
             return mCrimes.size();
+        }
+
+        public void setCrimes(List<Crime> crimes){
+            mCrimes = crimes;
         }
     }
 }
