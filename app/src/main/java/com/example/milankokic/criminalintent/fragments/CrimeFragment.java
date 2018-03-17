@@ -2,7 +2,11 @@ package com.example.milankokic.criminalintent.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -33,6 +37,9 @@ public class CrimeFragment extends Fragment {
     private CheckBox mSolvedCheckBox;
     private static final String DIALOG_DATE = "DialogDate";
     private static final int REQUEST_DATE = 0;
+    private static final int REQUEST_CONTACT = 1;
+    private Button mReportButton;
+    private Button mSuspectButton;
 
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -96,6 +103,36 @@ public class CrimeFragment extends Fragment {
                 mCrime.setSolved(b);
             }
         });
+
+        mReportButton = view.findViewById(R.id.send_report);
+        mReportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_suspect));
+                i = Intent.createChooser(i, getString(R.string.send_report));
+                startActivity(i);
+            }
+        });
+
+        final Intent pickContact = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        mSuspectButton = view.findViewById(R.id.choose_suspect);
+        mSuspectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(pickContact, REQUEST_CONTACT);
+            }
+        });
+        if (mCrime.getSuspect() != null) {
+            mSuspectButton.setText(mCrime.getSuspect());
+        }
+
+        PackageManager packageManager = getActivity().getPackageManager();
+        if (packageManager.resolveActivity(pickContact, PackageManager.MATCH_DEFAULT_ONLY) == null) {
+            mSuspectButton.setEnabled(false);
+        }
         return view;
     }
 
@@ -112,11 +149,40 @@ public class CrimeFragment extends Fragment {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
             updateDate();
+        } else if (requestCode == REQUEST_CONTACT) {
+            Uri contactUri = data.getData();
+            String[] queryFields = new String[]{
+                    ContactsContract.Contacts.DISPLAY_NAME
+            };
+            Cursor cursor = getActivity().getContentResolver().query(contactUri, queryFields, null, null, null);
+            try {
+                if (cursor.getCount() == 0) {
+                    return;
+                }
+
+                cursor.moveToFirst();
+                String suspect = cursor.getString(0);
+                mCrime.setSuspect(suspect);
+                mSuspectButton.setText(mCrime.getSuspect());
+            } finally {
+                cursor.close();
+            }
         }
     }
+
     @Override
     public void onPause() {
         super.onPause();
         CrimeLab.get(getActivity()).updateCrime(mCrime);
+    }
+
+    private String getCrimeReport() {
+        String solvedString;
+        solvedString = mCrime.isSolved() ? getString(R.string.crime_report_solved) : getString(R.string.crime_report_unsolved);
+        String dateFormat = "EEE, MMM dd";
+        String dateString = android.text.format.DateFormat.format(dateFormat, mCrime.getDate()).toString();
+        String suspect = mCrime.getSuspect();
+        suspect = suspect == null ? getString(R.string.crime_report_no_suspect) : getString(R.string.crime_report_suspect);
+        return getString(R.string.crime_report, mCrime.getTitle(), dateString, solvedString, suspect);
     }
 }
