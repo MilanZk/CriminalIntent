@@ -1,4 +1,4 @@
-package com.example.milankokic.criminalintent;
+package com.example.milankokic.criminalintent.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,6 +15,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+
+import com.example.milankokic.criminalintent.DatePickerFragment;
+import com.example.milankokic.criminalintent.R;
+import com.example.milankokic.criminalintent.database.CrimeLab;
+import com.example.milankokic.criminalintent.model.Crime;
 
 import java.util.Date;
 import java.util.UUID;
@@ -108,5 +113,10 @@ public class CrimeFragment extends Fragment {
             mCrime.setDate(date);
             updateDate();
         }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
     }
 }

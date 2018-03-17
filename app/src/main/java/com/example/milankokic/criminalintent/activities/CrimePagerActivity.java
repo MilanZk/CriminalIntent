@@ -1,4 +1,4 @@
-package com.example.milankokic.criminalintent;
+package com.example.milankokic.criminalintent.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +8,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+
+import com.example.milankokic.criminalintent.fragments.CrimeFragment;
+import com.example.milankokic.criminalintent.R;
+import com.example.milankokic.criminalintent.database.CrimeLab;
+import com.example.milankokic.criminalintent.model.Crime;
 
 import java.util.List;
 import java.util.UUID;
