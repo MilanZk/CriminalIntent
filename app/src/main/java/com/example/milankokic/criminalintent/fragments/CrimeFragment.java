@@ -1,4 +1,4 @@
-package com.example.milankokic.criminalintent;
+package com.example.milankokic.criminalintent.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +12,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+
+import com.example.milankokic.criminalintent.R;
+import com.example.milankokic.criminalintent.database.CrimeLab;
+import com.example.milankokic.criminalintent.model.Crime;
 
 import java.util.UUID;
 
@@ -77,5 +81,11 @@ public class CrimeFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
     }
 }
