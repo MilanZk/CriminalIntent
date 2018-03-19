@@ -40,6 +40,7 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
     private Button mReportButton;
+    private Button mPhoneButton;
     private Button mSuspectButton;
 
 
@@ -135,6 +136,17 @@ public class CrimeFragment extends Fragment {
         if (packageManager.resolveActivity(pickContact, PackageManager.MATCH_DEFAULT_ONLY) == null) {
             mSuspectButton.setEnabled(false);
         }
+        mPhoneButton = view.findViewById(R.id.get_phone);
+        mPhoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mCrime.getPhone() != null) {
+                    mPhoneButton.setText(mCrime.getPhone());
+                }
+            }
+        });
+
+
         return view;
     }
 

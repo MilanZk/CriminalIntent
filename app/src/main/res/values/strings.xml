@@ -20,4 +20,5 @@
     <string name="crime_report_subject">CriminalIntent Crime Report</string>
     <string name="send_report">Send crime report via</string>
     <string name="date_picker_title">Date of crime:</string>
+    <string name="get_suspect_s_phone">Get Suspect\'s phone</string>
 </resources>
