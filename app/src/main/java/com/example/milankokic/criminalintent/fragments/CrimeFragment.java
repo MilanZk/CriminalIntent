@@ -3,13 +3,17 @@ package com.example.milankokic.criminalintent.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,13 +23,18 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.example.milankokic.criminalintent.DatePickerFragment;
 import com.example.milankokic.criminalintent.R;
 import com.example.milankokic.criminalintent.database.CrimeLab;
 import com.example.milankokic.criminalintent.model.Crime;
+import com.example.milankokic.criminalintent.utils.PictureUtils;
 
+import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -38,8 +47,12 @@ public class CrimeFragment extends Fragment {
     private static final String DIALOG_DATE = "DialogDate";
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
+    private static final int REQUEST_CAMERA = 2;
     private Button mReportButton;
     private Button mSuspectButton;
+    private File mPhotoFile;
+    private ImageButton mPhotoButton;
+    private ImageView mPhotoView;
 
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -133,7 +146,43 @@ public class CrimeFragment extends Fragment {
         if (packageManager.resolveActivity(pickContact, PackageManager.MATCH_DEFAULT_ONLY) == null) {
             mSuspectButton.setEnabled(false);
         }
+
+        mPhotoButton = view.findViewById(R.id.crime_camera);
+        final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        boolean canTakePhoto = mPhotoFile != null && captureIntent.resolveActivity(packageManager) != null;
+        mPhotoButton.setEnabled(true);
+        mPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uri = FileProvider.getUriForFile(getActivity(), "com.example.milankokic.criminalintent.fileprovider", mPhotoFile);
+                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
+                List<ResolveInfo> cameraActivities = getActivity().getPackageManager()
+                        .queryIntentActivities(captureIntent, PackageManager.MATCH_DEFAULT_ONLY);
+
+                for (ResolveInfo activity : cameraActivities) {
+                    getActivity().grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+
+                startActivityForResult(captureIntent, REQUEST_CAMERA);
+            }
+        });
+        mPhotoView = view.findViewById(R.id.crime_photo);
+        updatePhotoView();
+        mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+
         return view;
+    }
+
+    private void updatePhotoView() {
+        if (mPhotoFile == null || !mPhotoFile.exists()) {
+            mPhotoView.setImageDrawable(null);
+        } else {
+            Bitmap bitmap = PictureUtils.getScaledBitmap(
+                    mPhotoFile.getPath(), getActivity());
+            mPhotoView.setImageBitmap(bitmap);
+        }
     }
 
     private void updateDate() {
@@ -167,6 +216,12 @@ public class CrimeFragment extends Fragment {
             } finally {
                 cursor.close();
             }
+        }
+        else  if (requestCode == REQUEST_CAMERA){
+            Uri uri = FileProvider.getUriForFile(getActivity(), "com.example.milankokic.criminalintent.fileprovider", mPhotoFile);
+
+            getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            updatePhotoView();
         }
     }
 
