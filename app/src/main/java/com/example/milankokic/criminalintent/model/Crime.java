@@ -11,9 +11,9 @@ public class Crime {
     private boolean isSolved;
     private String mSuspect;
 
-    public Crime (UUID id){
-      mId = id;
-      mDate = new Date();
+    public Crime(UUID id) {
+        mId = id;
+        mDate = new Date();
     }
 
     public String getSuspect() {
@@ -50,5 +50,9 @@ public class Crime {
 
     public UUID getId() {
         return mId;
+    }
+
+    public String getPhotoFilename() {
+        return "IMG_" + getId().toString() + ".jpg";
     }
 }
