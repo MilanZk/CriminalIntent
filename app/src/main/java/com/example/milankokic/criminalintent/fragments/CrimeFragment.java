@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -19,6 +18,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -26,11 +26,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.example.milankokic.criminalintent.DatePickerFragment;
 import com.example.milankokic.criminalintent.R;
 import com.example.milankokic.criminalintent.database.CrimeLab;
 import com.example.milankokic.criminalintent.model.Crime;
-import com.example.milankokic.criminalintent.utils.PictureUtils;
 
 import java.io.File;
 import java.util.Date;
@@ -48,11 +46,13 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
     private static final int REQUEST_CAMERA = 2;
+    private static final String DIALOG_ZOOMED_IMAGE = "zoomedImage";
     private Button mReportButton;
     private Button mSuspectButton;
     private File mPhotoFile;
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
+    private ViewTreeObserver observer;
 
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -169,7 +169,21 @@ public class CrimeFragment extends Fragment {
             }
         });
         mPhotoView = view.findViewById(R.id.crime_photo);
-        updatePhotoView();
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager manager = getFragmentManager();
+                ZoomedImageFragment dialog = ZoomedImageFragment.newInstance(mPhotoFile.getPath());
+                dialog.show(manager, DIALOG_ZOOMED_IMAGE);
+            }
+        });
+        observer = mPhotoView.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                updatePhotoView();
+            }
+        });
         mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
 
         return view;
@@ -179,9 +193,7 @@ public class CrimeFragment extends Fragment {
         if (mPhotoFile == null || !mPhotoFile.exists()) {
             mPhotoView.setImageDrawable(null);
         } else {
-            Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(), getActivity());
-            mPhotoView.setImageBitmap(bitmap);
+            mPhotoView.setImageURI(Uri.parse(mPhotoFile.getPath()));
         }
     }
 
@@ -216,12 +228,16 @@ public class CrimeFragment extends Fragment {
             } finally {
                 cursor.close();
             }
-        }
-        else  if (requestCode == REQUEST_CAMERA){
+        } else if (requestCode == REQUEST_CAMERA) {
             Uri uri = FileProvider.getUriForFile(getActivity(), "com.example.milankokic.criminalintent.fileprovider", mPhotoFile);
 
             getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            updatePhotoView();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    updatePhotoView();
+                }
+            });
         }
     }
 
